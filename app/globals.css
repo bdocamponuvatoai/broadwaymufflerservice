@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+/*
+  Palette from the shop itself: the red Broadway Muffler bumper sticker (signal),
+  galvanized corrugated walls (steel), the yellow lift ramps (lift) and soot (ink).
+  Every text pairing is checked for WCAG AA contrast; see README "Design system".
+*/
+@theme {
+  --color-paper: #f4f2ed;
+  --color-paper-deep: #e8e4db;
+  --color-line: #d6d1c6;
+  --color-steel: #575d65;
+  --color-ink: #15171a;
+  --color-ink-soft: #24272c;
+  --color-ink-line: #3a3e45;
+  --color-signal: #b8261b;
+  --color-signal-dark: #93190f;
+  --color-signal-bright: #ff5a45;
+  --color-lift: #f2b631;
+
+  --font-sans: var(--font-barlow), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-barlow-condensed), ui-sans-serif, system-ui, sans-serif;
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@utility shell {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (width >= 40rem) {
+    padding-inline: 1.5rem;
+  }
+  @media (width >= 64rem) {
+    padding-inline: 2.5rem;
+  }
+}
+
+@utility section-y {
+  padding-block: 4.5rem;
+  @media (width >= 48rem) {
+    padding-block: 7rem;
+  }
+}
+
+/* Condensed signage type for headlines. */
+@utility text-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* Small set-in labels: captions, part numbers, image credits. Not section eyebrows. */
+@utility tag-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    ::before,
+    ::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-lift);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-signal);
+    outline-offset: 3px;
+  }
+
+  .on-dark :focus-visible,
+  .on-dark:focus-visible {
+    outline-color: var(--color-lift);
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  dialog::backdrop {
+    background: rgb(10 11 13 / 0.72);
+  }
+}
+
+/* Hero entrance runs on CSS alone so it never waits for hydration. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-in {
+    animation: rise-in 0.9s var(--ease-out-quart) both;
+  }
+  .hero-in-2 {
+    animation-delay: 0.12s;
+  }
+  .hero-in-3 {
+    animation-delay: 0.24s;
+  }
+}
+
+/*
+  Scroll reveal: only hide content when scripting is on and motion is welcome.
+  Without JavaScript, or with reduced motion, everything is simply visible.
+*/
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(1.5rem);
+    transition:
+      opacity 0.7s var(--ease-out-quart),
+      transform 0.7s var(--ease-out-quart);
+  }
+  [data-reveal="visible"] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* The exhaust diagram draws its pipework as it scrolls into view. */
+  .pipe-draw {
+    stroke-dasharray: 1;
+    transition: stroke-dashoffset 1.6s var(--ease-out-quart) 0.25s;
+  }
+  [data-reveal]:not([data-reveal="visible"]) .pipe-draw {
+    stroke-dashoffset: 1;
+  }
+}
